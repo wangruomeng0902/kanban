@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>待办看板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f2f5;
+  min-height: 100vh;
+  padding: 20px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.header h1 { font-size: 22px; font-weight: 600; color: #1a1a2e; }
+.header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.person-filter { display: flex; gap: 4px; }
+.person-filter .btn {
+  font-size: 12px; padding: 4px 12px; border-radius: 20px;
+  border: 1.5px solid #d1d5db; background: transparent; color: #6b7280;
+  cursor: pointer; transition: all 0.2s; font-weight: 500;
+}
+.person-filter .btn.active-person { background: #4f46e5; color: white; border-color: #4f46e5; }
+
+.btn {
+  padding: 6px 14px; border: none; border-radius: 8px;
+  font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+}
+.btn-primary { background: #4f46e5; color: white; }
+.btn-primary:hover { background: #4338ca; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-outline { background: transparent; border: 1.5px solid #d1d5db; color: #374151; }
+.btn-outline:hover { background: #f3f4f6; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+.stats-row {
+  display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.stat-card {
+  flex: 1; min-width: 140px; background: white; border-radius: 12px;
+  padding: 24px 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
+.stat-card .stat-num {
+  font-size: 36px; font-weight: 700; line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 13px; color: #6b7280; margin-top: 4px;
+  font-weight: 500;
+}
+.stat-card.stat-total { border-top: 3px solid #4f46e5; }
+.stat-card.stat-total .stat-num { color: #4f46e5; }
+.stat-card.stat-new { border-top: 3px solid #10b981; }
+.stat-card.stat-new .stat-num { color: #10b981; }
+.stat-card.stat-doing { border-top: 3px solid #f59e0b; }
+.stat-card.stat-doing .stat-num { color: #f59e0b; }
+.stat-card.stat-overdue { border-top: 3px solid #ef4444; }
+.stat-card.stat-overdue .stat-num { color: #ef4444; }
+.stat-card.stat-done { border-top: 3px solid #9ca3af; }
+.stat-card.stat-done .stat-num { color: #9ca3af; }
+
+.board { display: flex; gap: 16px; min-height: calc(100vh - 100px); }
+.module {
+  flex: 1; background: #e8eaf0; border-radius: 12px; padding: 12px;
+  display: flex; flex-direction: column;
+}
+.module-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 8px 10px; font-weight: 600; font-size: 15px; color: #374151;
+}
+.module-header .count { background: rgba(0,0,0,0.08); padding: 2px 10px; border-radius: 12px; font-size: 13px; }
+.module.new-module { border-top: 3px solid #4f46e5; }
+.module.history-module { border-top: 3px solid #9ca3af; }
+.module-body { flex: 1; overflow-y: auto; padding: 4px; }
+.sub-hdr {
+  font-size: 12px; font-weight: 600; padding: 5px 8px 3px;
+  position: sticky; top: 0; z-index: 1;
+  margin-bottom: 4px; border-radius: 6px;
+}
+.sub-hdr .sub-count {
+  font-weight: 400; font-size: 11px; margin-left: 4px;
+}
+.sub-hdr.sub-todo { background: #eff6ff; color: #2563eb; }
+.sub-hdr.sub-doing { background: #fffbeb; color: #d97706; }
+.sub-hdr.sub-overdue { background: #fef2f2; color: #dc2626; }
+.sub-hdr.sub-done { background: #f3f4f6; color: #6b7280; }
+
+.card {
+  background: white; border-radius: 10px; padding: 12px; margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;
+  transition: all 0.15s; position: relative;
+}
+.card:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
+.card.overdue { border-left: 4px solid #ef4444; background: #fef2f2; }
+.card.done { opacity: 0.7; }
+.card-title { font-size: 14px; font-weight: 500; color: #111827; margin-bottom: 4px; word-break: break-word; }
+.card-desc { font-size: 12px; color: #6b7280; word-break: break-word; white-space: pre-wrap; margin-bottom: 4px; }
+.card-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
+.card-meta .tag {
+  display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 500;
+}
+.tag-high { background: #fef2f2; color: #dc2626; }
+.tag-medium { background: #fffbeb; color: #d97706; }
+.tag-low { background: #ecfdf5; color: #059669; }
+.tag-todo { background: #eff6ff; color: #2563eb; }
+.tag-doing { background: #fffbeb; color: #d97706; }
+.tag-done { background: #ecfdf5; color: #059669; }
+.tag-overdue { background: #fef2f2; color: #dc2626; font-weight: 600; }
+.tag-soon { background: #fff7ed; color: #ea580c; }
+.person-dukai { background: #eff6ff; color: #2563eb; }
+.person-ruomeng { background: #fff7ed; color: #ea580c; }
+.person-yangqijiao { background: #ecfdf5; color: #059669; }
+.person-other { background: #f3f4f6; color: #6b7280; }
+.card-actions {
+  display: flex; gap: 4px; margin-top: 6px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.card:hover .card-actions { opacity: 1; }
+.card-actions button {
+  background: none; border: none; cursor: pointer; font-size: 13px;
+  padding: 2px 4px; border-radius: 4px; color: #9ca3af; transition: color 0.15s;
+}
+.card-actions button:hover { color: #374151; }
+.card-actions .del:hover { color: #ef4444; }
+.empty { text-align: center; color: #9ca3af; font-size: 13px; padding: 30px 10px; }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4); z-index: 1000;
+  justify-content: center; align-items: center;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: white; border-radius: 16px; padding: 24px; width: 440px;
+  max-width: 90vw; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.modal h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #111827; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: #374151; margin-bottom: 4px; }
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 8px 12px; border: 1.5px solid #d1d5db;
+  border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #4f46e5; }
+.form-group textarea { min-height: 60px; resize: vertical; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📋 属地规划待办看板</h1>
+  <div class="header-actions">
+    <span class="person-filter" id="personFilter">
+      <button class="btn active-person" data-person="all" onclick="setPersonFilter('all')">👥 全部</button>
+      <button class="btn" data-person="杜凯" onclick="setPersonFilter('杜凯')">🔵 杜凯</button>
+      <button class="btn" data-person="王若蒙" onclick="setPersonFilter('王若蒙')">🟠 若蒙</button>
+      <button class="btn" data-person="杨启皎" onclick="setPersonFilter('杨启皎')">🟢 杨启皎</button>
+      <button class="btn" data-person="蔡敏" onclick="setPersonFilter('蔡敏')">🟤 蔡敏</button>
+    </span>
+    <button class="btn" id="overdueBtn" onclick="toggleOverdue()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">⏰ 逾期</button>
+    <button class="btn" id="incompleteBtn" onclick="toggleIncomplete()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">📋 未完成</button>
+    <button class="btn" id="doneBtn" onclick="toggleDone()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">✅ 已完成</button>
+    <button class="btn btn-outline btn-sm" onclick="importWeekData()" title="导入6.15周会历史待办">📥 导入历史</button>
+    <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
+    <button class="btn btn-primary" onclick="openModal()">+ 新建</button>
+  </div>
+</div>
+
+<div class="stats-row" id="statsRow"></div>
+<div class="board" id="board"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modalTitle">新建待办</h2>
+    <div class="form-group">
+      <label>标题 *</label>
+      <input id="inputTitle" placeholder="输入待办标题">
+    </div>
+    <div class="form-group">
+      <label>描述</label>
+      <textarea id="inputDesc" placeholder="添加描述（可选）"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>优先级</label>
+        <select id="inputPriority">
+          <option value="medium">中</option>
+          <option value="high">高</option>
+          <option value="low">低</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>状态</label>
+        <select id="inputStatus">
+          <option value="todo">待办</option>
+          <option value="doing">进行中</option>
+          <option value="done">已完成</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>负责人</label>
+        <select id="inputPerson">
+          <option value="">未分配</option>
+          <option value="杜凯">杜凯</option>
+          <option value="王若蒙">王若蒙</option>
+          <option value="杨启皎">杨启皎</option>
+          <option value="蔡敏">蔡敏</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>截止日期</label>
+        <input type="date" id="inputDeadline">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>结论 / 交付情况</label>
+      <textarea id="inputConclusion" placeholder="记录这条待办的最终结论、交付结果……" style="min-height:60px"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveCard()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = '***';
+
+let data = [];
+let editingId = null;
+let personFilter = 'all';
+let showOverdueOnly = false;
+let showIncompleteOnly = false;
+let showDoneOnly = false;
+
+function getDefaultData() {
+  const now = new Date().toISOString();
+  return [
+    // 6/22 本周待办
+    { id: 's0', title: '完成4月前后回流案件24小时内加急率、风险外溢率对比数据，周四会议前同步 @杜凯 Du Du', desc: '6.22属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-06-25', conclusion: '', created: '2026-06-22T08:00:00.000Z' },
+    { id: 's1', title: '收集华东、鲁苏区域安创口径缺失的卡点案例及具体对接人信息，形成需求文档 @杜凯 Du Du', desc: '6.22属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-06-26', conclusion: '', created: '2026-06-22T08:05:00.000Z' },
+    { id: 's2', title: '推进事故侧内部合议结案流程落地，按时效要求完成各环节 @王若蒙 Ruomeng Wang', desc: '6.22属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-06-24', conclusion: '', created: '2026-06-22T08:10:00.000Z' },
+    { id: 's3', title: '跟进明镜系统改造进度，向中山团队确认最新情况 @杜凯 Du Du', desc: '6.22属地周会', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-06-28', conclusion: '', created: '2026-06-22T08:15:00.000Z' },
+    { id: 's4', title: '汇总属地工单受理入口 @王若蒙 Ruomeng Wang', desc: '6.22属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '', conclusion: '', created: '2026-06-22T08:20:00.000Z' },
+    { id: 's5', title: '跟进策略交付专项进度，启动交付策略合议庭组建，同步推进突发疾病、自杀场景的策略梳理 @王若蒙 Ruomeng Wang', desc: '6.22属地周会', priority: 'high', status: 'doing', person: '王若蒙', deadline: '2026-06-27', conclusion: '', created: '2026-06-22T08:25:00.000Z' },
+    { id: 's6', title: '梳理人员分布与区域的交叉关系图 @王若蒙 Ruomeng Wang', desc: '6.22属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '', conclusion: '', created: '2026-06-22T08:30:00.000Z' },
+    { id: 's7', title: '补充鲁苏区司机库专项各链路现状与新流程的对比表，本周组织过会 @王若蒙 Ruomeng Wang', desc: '6.22属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-06-26', conclusion: '', created: '2026-06-22T08:35:00.000Z' },
+    { id: 's8', title: '完成鲁苏区专项中差异点提炼及图片', desc: '鲁苏区专项', priority: 'high', status: 'todo', person: '', deadline: '2026-06-25', conclusion: '', created: '2026-06-22T09:00:00.000Z' },
+    // 6/15 属地周会历史待办
+    { id: 'w1a', title: '确认并修正月考题库，准备6月底的考试卷，本周内下发考试通知 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'done', person: '杨启皎', deadline: '2026-06-19', conclusion: '', created: '2026-06-15T09:00:00.000Z' },
+    { id: 'w1b', title: '确认并修正月考题库，准备6月底的考试卷，本周内下发考试通知 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'done', person: '杜凯', deadline: '2026-06-19', conclusion: '', created: '2026-06-15T09:00:00.000Z' },
+    { id: 'w2', title: '今日内完成Q3 DDO征集通知的下发 @王若蒙 Ruomeng Wang', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'done', person: '王若蒙', deadline: '2026-06-15', conclusion: '', created: '2026-06-15T09:10:00.000Z' },
+    { id: 'w3', title: '梳理策略评估的新运行模式，节后第一周产出 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '2026-06-24', conclusion: '', created: '2026-06-15T09:20:00.000Z' },
+    { id: 'w4', title: '与若雨沟通，调整看板数据，将自建单从主诉中拆分出来单独展示 @杨启皎', desc: '蔡敏/6.15属地周会\n看板链接', priority: 'medium', status: 'done', person: '杨启皎', deadline: '2026-06-15', conclusion: '', created: '2026-06-15T09:30:00.000Z' },
+    { id: 'w5', title: '和T2负责人预约时间，确定区域提上线专项的时间（暂定7月第二周） @蔡敏', desc: '蔡敏/6.15属地周会', priority: 'medium', status: 'todo', person: '蔡敏', deadline: '', conclusion: '', created: '2026-06-15T09:40:00.000Z' },
+    { id: 'w6', title: '梳理影响一三类结案周期的所有因素 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-06-22', conclusion: '职伤：职伤案件全量开成后结案周期拉长。人力分布：属地人力分布不均，未决跨度45-108。', created: '2026-06-15T09:50:00.000Z' },
+    { id: 'w7', title: '跟进6月200天以上未决案件区域梳理，组织区域梳理，并评估Q3专项开展节奏 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杜凯', deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:00:00.000Z' },
+    { id: 'w8a', title: '跟进事故新SOP上线后的数据口径调整，同步数据进行数据口径调整 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杜凯', deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:10:00.000Z' },
+    { id: 'w8b', title: '跟进事故新SOP上线后的数据口径调整，同步数据进行数据口径调整 @王若蒙 Ruomeng Wang', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '王若蒙', deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:10:00.000Z' },
+    { id: 'w9', title: '与方林沟通，向复审环节提需求，确保审核时查看医院退款等材料 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杜凯', deadline: '2026-06-19', conclusion: '初步沟通了方向，需下周前往北京和方林当面详聊', created: '2026-06-15T10:20:00.000Z' },
+    { id: 'w10', title: '与上海/深圳驻守旗舰店的管理者/一线沟通摸排情况，明确后续个体极端/群体事件的应对方式，形成应对预案，梳理与车主之家/交付中心的不同点 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-06-15T10:30:00.000Z' },
+    { id: 'w11', title: '将大连和惠州案例整理并与所有安全中台沟通商家风险信息上报问题，个体极端和维稳相关信息需及时上报渠道、同步110或应急做信息研判 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-06-15T10:40:00.000Z' },
+  ];
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    data = raw ? JSON.parse(raw) : getDefaultData();
+  } catch { data = getDefaultData(); }
+  data = data.filter(c => c && c.title && c.id);
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+// Week utilities
+function getWeekStart(d) {
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(date.setDate(diff));
+  monday.setHours(0,0,0,0);
+  return monday;
+}
+
+function isCurrentWeek(dateStr) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr);
+  const now = new Date();
+  return getWeekStart(d).getTime() === getWeekStart(now).getTime();
+}
+
+function isLastWeek(dateStr) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr);
+  const now = new Date();
+  const thisWeekStart = getWeekStart(now);
+  const lastWeekStart = new Date(thisWeekStart);
+  lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+  const lastWeekEnd = new Date(thisWeekStart);
+  lastWeekEnd.setDate(lastWeekEnd.getDate() - 1);
+  return d >= lastWeekStart && d <= lastWeekEnd;
+}
+
+function isNewTodo(dateStr) {
+  return isCurrentWeek(dateStr) || isLastWeek(dateStr);
+}
+
+function isOverdue(deadline, status) {
+  if (!deadline || status === 'done') return false;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const d = new Date(deadline);
+  d.setHours(0,0,0,0);
+  return d < today;
+}
+
+function isDueSoon(deadline, status) {
+  if (!deadline || status === 'done') return false;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const d = new Date(deadline);
+  d.setHours(0,0,0,0);
+  const diff = Math.ceil((d - today) / (1000*60*60*24));
+  return diff >= 0 && diff <= 2;
+}
+
+function formatDeadline(dl) {
+  if (!dl) return '';
+  const d = new Date(dl + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d2 = new Date(dl + 'T00:00:00');
+  const diff = Math.ceil((d2 - today) / (1000*60*60*24));
+  if (diff === 0) return '📅 今天截止';
+  if (diff === 1) return '📅 明天截止';
+  if (diff === -1) return '📅 昨天截止';
+  return `📅 ${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function getPerson(card) {
+  if (card.person) return card.person;
+  if (!card.title) return '';
+  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏)/);
+  return m ? m[1] : '';
+}
+
+function getStatusLabel(s) {
+  const m = { todo: '待办', doing: '进行中', done: '已完成' };
+  return m[s] || '待办';
+}
+function getPriorityLabel(p) {
+  const m = { high: '高', medium: '中', low: '低' };
+  return m[p] || '中';
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+function createCardEl(card) {
+  const el = document.createElement('div');
+  el.className = `card priority-${card.priority || 'medium'}`;
+  const ov = isOverdue(card.deadline, card.status);
+  if (ov) el.classList.add('overdue');
+  if (card.status === 'done') el.classList.add('done');
+  el.onclick = () => openModal(card);
+
+  const person = getPerson(card);
+  const conclusion = card.conclusion || '';
+  const dl = formatDeadline(card.deadline);
+  const ovTag = isOverdue(card.deadline, card.status);
+  const soonTag = !ovTag && isDueSoon(card.deadline, card.status);
+
+  let metaHtml = `<span class="tag tag-${card.priority || 'medium'}">${getPriorityLabel(card.priority)}</span>`;
+  metaHtml += `<span class="tag tag-${card.status || 'todo'}">${getStatusLabel(card.status)}</span>`;
+  if (ovTag) metaHtml += `<span class="tag tag-overdue">⚠️ 已逾期</span>`;
+  else if (soonTag && dl) metaHtml += `<span class="tag tag-soon">⏰ ${dl.replace('📅 ','')}</span>`;
+  else if (dl) metaHtml += `<span style="font-size:11px;color:#6b7280">${dl}</span>`;
+  if (person) {
+    const pMap = { '杜凯':'dukai','王若蒙':'ruomeng','杨启皎':'yangqijiao','蔡敏':'caimin' };
+    const lMap = { '杜凯':'@杜凯','王若蒙':'@若蒙','杨启皎':'@杨启皎','蔡敏':'@蔡敏' };
+    const pClass = pMap[person] || 'other';
+    const pLabel = lMap[person] || person;
+    metaHtml += `<span class="tag person-${pClass}">${pLabel}</span>`;
+  }
+
+  const actionsHtml = `
+    <button onclick="event.stopPropagation();openModal(data.find(c=>c.id==='${card.id}'))" title="编辑">✏️</button>
+    <button class="del" onclick="event.stopPropagation();deleteCard('${card.id}')" title="删除">🗑</button>
+  `;
+
+  el.innerHTML = `
+    <div class="card-title">${escapeHtml(card.title)}</div>
+    ${card.desc ? `<div class="card-desc">${escapeHtml(card.desc).substring(0,60)}${card.desc.length > 60 ? '…' : ''}</div>` : ''}
+    ${conclusion ? `<div style="font-size:12px;color:#059669;background:#ecfdf5;padding:4px 6px;border-radius:4px;margin-top:4px">✅ ${escapeHtml(conclusion).substring(0,50)}</div>` : ''}
+    <div class="card-meta">${metaHtml}</div>
+    <div class="card-actions">${actionsHtml}</div>
+  `;
+  return el;
+}
+
+function setPersonFilter(person) {
+  personFilter = person;
+  document.querySelectorAll('.person-filter .btn').forEach(b => {
+    b.classList.toggle('active-person', b.dataset.person === person);
+  });
+  render();
+}
+
+function toggleOverdue() {
+  showOverdueOnly = !showOverdueOnly;
+  document.getElementById('overdueBtn').style.cssText = showOverdueOnly
+    ? 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #ef4444;background:#fef2f2;color:#dc2626;cursor:pointer;font-weight:600;transition:all 0.2s'
+    : 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s';
+  render();
+}
+
+function toggleIncomplete() {
+  showIncompleteOnly = !showIncompleteOnly;
+  if (showIncompleteOnly) showDoneOnly = false;
+  document.getElementById('incompleteBtn').style.cssText = showIncompleteOnly
+    ? 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #2563eb;background:#eff6ff;color:#2563eb;cursor:pointer;font-weight:600;transition:all 0.2s'
+    : 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s';
+  document.getElementById('doneBtn').style.cssText = showDoneOnly
+    ? 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #059669;background:#ecfdf5;color:#059669;cursor:pointer;font-weight:600;transition:all 0.2s'
+    : 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s';
+  render();
+}
+
+function toggleDone() {
+  showDoneOnly = !showDoneOnly;
+  if (showDoneOnly) showIncompleteOnly = false;
+  document.getElementById('doneBtn').style.cssText = showDoneOnly
+    ? 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #059669;background:#ecfdf5;color:#059669;cursor:pointer;font-weight:600;transition:all 0.2s'
+    : 'font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s';
+  render();
+}
+
+function renderStats(filtered) {
+  const total = filtered.length;
+  const newCnt = filtered.filter(c => isNewTodo(c.created)).length;
+  const doingCnt = filtered.filter(c => c.status === 'doing').length;
+  const doneCnt = filtered.filter(c => c.status === 'done').length;
+  const overdueCnt = filtered.filter(c => isOverdue(c.deadline, c.status)).length;
+  const el = document.getElementById('statsRow');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="stat-card stat-total"><div class="stat-num">${total}</div><div class="stat-label">📋 总待办</div></div>
+    <div class="stat-card stat-new"><div class="stat-num">${newCnt}</div><div class="stat-label">✨ 本周+上周新增</div></div>
+    <div class="stat-card stat-doing"><div class="stat-num">${doingCnt}</div><div class="stat-label">🔄 进行中</div></div>
+    <div class="stat-card stat-overdue"><div class="stat-num"${overdueCnt > 0 ? ' style="color:#ef4444"' : ''}>${overdueCnt}</div><div class="stat-label">⏰ 已逾期</div></div>
+    <div class="stat-card stat-done"><div class="stat-num">${doneCnt}</div><div class="stat-label">✅ 已完成</div></div>
+  `;
+}
+
+function appendGrouped(container, items) {
+  if (items.length === 0) {
+    container.innerHTML = '<div class="empty">暂无待办</div>';
+    return;
+  }
+  
+  const groups = [
+    { key: 'todo', items: [], icon: '📝', label: '待办', css: 'sub-todo' },
+    { key: 'doing_ok', items: [], icon: '🔄', label: '进行中（未逾期）', css: 'sub-doing' },
+    { key: 'doing_ov', items: [], icon: '⏰', label: '进行中（已逾期）', css: 'sub-overdue' },
+    { key: 'done', items: [], icon: '✅', label: '已完成', css: 'sub-done' },
+  ];
+  
+  items.forEach(card => {
+    if (card.status === 'done') {
+      groups[3].items.push(card);
+    } else if (card.status === 'doing' && isOverdue(card.deadline, card.status)) {
+      groups[2].items.push(card);
+    } else if (card.status === 'doing') {
+      groups[1].items.push(card);
+    } else {
+      groups[0].items.push(card);
+    }
+  });
+  
+  container.innerHTML = '';
+  groups.forEach(g => {
+    if (g.items.length === 0) return;
+    const hdr = document.createElement('div');
+    hdr.className = `sub-hdr ${g.css}`;
+    hdr.innerHTML = `${g.icon} ${g.label}<span class="sub-count">${g.items.length}</span>`;
+    container.appendChild(hdr);
+    g.items.forEach(card => container.appendChild(createCardEl(card)));
+  });
+  
+  if (container.children.length === 0) {
+    container.innerHTML = '<div class="empty">暂无待办</div>';
+  }
+}
+
+function render() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  let filtered = personFilter === 'all'
+    ? data : data.filter(c => getPerson(c) === personFilter);
+  
+  if (showOverdueOnly) {
+    filtered = filtered.filter(c => isOverdue(c.deadline, c.status));
+  }
+  if (showIncompleteOnly) {
+    filtered = filtered.filter(c => c.status !== 'done');
+  }
+  if (showDoneOnly) {
+    filtered = filtered.filter(c => c.status === 'done');
+  }
+
+  const newItems = filtered.filter(c => isNewTodo(c.created));
+  const historyItems = filtered.filter(c => !isNewTodo(c.created));
+  
+  renderStats(filtered);
+
+  board.innerHTML = `
+    <div class="module new-module">
+      <div class="module-header">
+        <span>✨ 新增待办 <span style="font-size:12px;color:#9ca3af;font-weight:400">（本周+上周）</span></span>
+        <span class="count">${newItems.length}</span>
+      </div>
+      <div class="module-body" id="moduleNew"></div>
+    </div>
+    <div class="module history-module">
+      <div class="module-header">
+        <span>📦 历史待办</span>
+        <span class="count">${historyItems.length}</span>
+      </div>
+      <div class="module-body" id="moduleHistory"></div>
+    </div>
+  `;
+
+  const bodyNew = document.getElementById('moduleNew');
+  const bodyHist = document.getElementById('moduleHistory');
+
+  appendGrouped(bodyNew, newItems);
+  appendGrouped(bodyHist, historyItems);
+
+  editingId = null;
+}
+
+// Modal
+function openModal(card) {
+  const modal = document.getElementById('modal');
+  modal.classList.add('active');
+  if (card) {
+    document.getElementById('modalTitle').textContent = '编辑待办';
+    document.getElementById('inputTitle').value = card.title;
+    document.getElementById('inputDesc').value = card.desc || '';
+    document.getElementById('inputPriority').value = card.priority || 'medium';
+    document.getElementById('inputStatus').value = card.status || 'todo';
+    document.getElementById('inputPerson').value = card.person || '';
+    document.getElementById('inputDeadline').value = card.deadline || '';
+    document.getElementById('inputConclusion').value = card.conclusion || '';
+    editingId = card.id;
+  } else {
+    document.getElementById('modalTitle').textContent = '新建待办';
+    document.getElementById('inputTitle').value = '';
+    document.getElementById('inputDesc').value = '';
+    document.getElementById('inputPriority').value = 'medium';
+    document.getElementById('inputStatus').value = 'todo';
+    document.getElementById('inputPerson').value = '';
+    document.getElementById('inputDeadline').value = '';
+    document.getElementById('inputConclusion').value = '';
+    editingId = null;
+  }
+  document.getElementById('inputTitle').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  editingId = null;
+}
+
+function saveCard() {
+  const title = document.getElementById('inputTitle').value.trim();
+  if (!title) { alert('请输入标题'); return; }
+  const desc = document.getElementById('inputDesc').value.trim();
+  const priority = document.getElementById('inputPriority').value;
+  const status = document.getElementById('inputStatus').value;
+  const person = document.getElementById('inputPerson').value;
+  const deadline = document.getElementById('inputDeadline').value;
+  const conclusion = document.getElementById('inputConclusion').value.trim();
+
+  if (editingId) {
+    const idx = data.findIndex(c => c.id === editingId);
+    if (idx >= 0) {
+      data[idx] = { ...data[idx], title, desc, priority, status, person, deadline, conclusion };
+    }
+  } else {
+    data.push({ id: genId(), title, desc, priority, status, person, deadline, conclusion, created: new Date().toISOString() });
+  }
+  saveData();
+  render();
+  closeModal();
+}
+
+function deleteCard(id) {
+  if (!confirm('确定删除这条待办？')) return;
+  data = data.filter(c => c.id !== id);
+  saveData();
+  render();
+}
+
+function recordConclusion(id) {
+  const card = data.find(c => c.id === id);
+  if (!card) return;
+  const current = card.conclusion || '';
+  const result = prompt('记录结论：', current);
+  if (result === null) return;
+  card.conclusion = result;
+  saveData();
+  render();
+}
+
+function importWeekData() {
+  const newTodos = getDefaultData().filter(d => d.id.startsWith('w'));
+  const existingIds = new Set(data.map(d => d.id));
+  let added = 0;
+  newTodos.forEach(t => {
+    if (!existingIds.has(t.id)) {
+      data.push(t);
+      added++;
+    }
+  });
+  if (added === 0) { alert('历史待办已导入，没有新增数据'); return; }
+  saveData();
+  render();
+  alert(`✅ 已导入 ${added} 条6.15周会历史待办`);
+}
+
+function clearAll() {
+  if (!confirm('确定清空所有待办？此操作不可恢复！')) return;
+  data = [];
+  saveData();
+  render();
+}
+
+// Init
+loadData();
+render();
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('modal').classList.contains('active') && e.target.tagName !== 'TEXTAREA') saveCard();
+});
+</script>
+</body>
+</html>
