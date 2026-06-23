@@ -555,18 +555,15 @@ function appendGrouped(container, items) {
   }
   
   const groups = [
-    { key: 'todo', items: [], icon: '📝', label: '待办', css: 'sub-todo' },
-    { key: 'doing_ok', items: [], icon: '🔄', label: '进行中（未逾期）', css: 'sub-doing' },
+    { key: 'todo_doing', items: [], icon: '📝', label: '待办/进行中', css: 'sub-todo' },
     { key: 'doing_ov', items: [], icon: '⏰', label: '进行中（已逾期）', css: 'sub-overdue' },
     { key: 'done', items: [], icon: '✅', label: '已完成', css: 'sub-done' },
   ];
   
   items.forEach(card => {
     if (card.status === 'done') {
-      groups[3].items.push(card);
-    } else if (card.status === 'doing' && isOverdue(card.deadline, card.status)) {
       groups[2].items.push(card);
-    } else if (card.status === 'doing') {
+    } else if (card.status === 'doing' && isOverdue(card.deadline, card.status)) {
       groups[1].items.push(card);
     } else {
       groups[0].items.push(card);
