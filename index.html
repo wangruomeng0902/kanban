@@ -136,6 +136,7 @@ body {
 .person-ruomeng { background: #fff7ed; color: #ea580c; }
 .person-yangqijiao { background: #ecfdf5; color: #059669; }
 .person-other { background: #f3f4f6; color: #6b7280; }
+.person-dapeng { background: #f3e8ff; color: #7c3aed; }
 .card-actions {
   display: flex; gap: 4px; margin-top: 6px;
   opacity: 0; transition: opacity 0.2s;
@@ -191,6 +192,7 @@ body {
       <button class="btn" data-person="王若蒙" onclick="setPersonFilter('王若蒙')">🟠 若蒙</button>
       <button class="btn" data-person="杨启皎" onclick="setPersonFilter('杨启皎')">🟢 杨启皎</button>
       <button class="btn" data-person="蔡敏" onclick="setPersonFilter('蔡敏')">🟤 蔡敏</button>
+      <button class="btn" data-person="大朋" onclick="setPersonFilter('大朋')">🟣 大朋</button>
     </span>
     <button class="btn" id="overdueBtn" onclick="toggleOverdue()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">⏰ 逾期</button>
     <button class="btn" id="incompleteBtn" onclick="toggleIncomplete()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">📋 未完成</button>
@@ -249,6 +251,9 @@ body {
           </label>
           <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
             <input type="checkbox" value="蔡敏" style="accent-color:#4f46e5"> 蔡敏
+          </label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
+            <input type="checkbox" value="大朋" style="accent-color:#4f46e5"> 大朋
           </label>
         </div>
       </div>
@@ -315,8 +320,8 @@ function getDefaultData() {
     { id: 'm6', title: '与安响团队拉齐安全手机使用规范', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T09:30:00.000Z' },
     { id: 'm7', title: '确认安响团队来成都沟通的具体议题与材料准备情况', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T09:35:00.000Z' },
     { id: 'm8', title: '完成个体极端事件专项的阶段性结论输出', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:40:00.000Z' },
-    { id: 'm9', title: '建立 SAG 演练剧本开发群，并明确分工，在下周完成 SAG 演练剧本初稿及时间轴排期 @杜凯 Du Du @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-17', conclusion: '', created: '2026-07-06T09:45:00.000Z' },
-    { id: 'm10', title: '在月底前完成 SAG 运营机制 V1.0 的撰写 @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:50:00.000Z' },
+    { id: 'm9', title: '建立 SAG 演练剧本开发群，并明确分工，在下周完成 SAG 演练剧本初稿及时间轴排期 @杜凯 Du Du @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['杜凯','大朋'], deadline: '2026-07-17', conclusion: '', created: '2026-07-06T09:45:00.000Z' },
+    { id: 'm10', title: '在月底前完成 SAG 运营机制 V1.0 的撰写 @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['大朋'], deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:50:00.000Z' },
     { id: 'm11', title: '收集一线对个人成长档案的反馈 @杜凯 Du Du @杨启皎 Qijiao Yang @王若蒙 Ruomeng Wang', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: ['杜凯','杨启皎','王若蒙'], deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:55:00.000Z' },
     { id: 'm12', title: '补充司法解释二推出后现有平台保障的核心调整内容', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T10:00:00.000Z' },
     { id: 'm13', title: '履责率指标合并至尽责指标后的口径调整，需杜凯确认后推进 @王若蒙 Ruomeng Wang @杜凯 Du Du', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['王若蒙','杜凯'], deadline: '2026-07-13', conclusion: '', created: '2026-07-06T10:05:00.000Z' },
@@ -408,7 +413,7 @@ function getPersonList(card) {
   if (Array.isArray(card.person)) return card.person.filter(Boolean);
   if (typeof card.person === 'string' && card.person) return [card.person];
   if (!card.title) return [];
-  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏)/g);
+  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋)/g);
   return m ? m.map(s => s.slice(1)).filter((v,i,a) => a.indexOf(v)===i) : [];
 }
 function getPerson(card) {
@@ -459,8 +464,8 @@ function createCardEl(card, isArchive) {
   else if (soonTag && dl) metaHtml += `<span class="tag tag-soon">⏰ ${dl.replace('📅 ','')}</span>`;
   else if (dl) metaHtml += `<span style="font-size:11px;color:#6b7280">${dl}</span>`;
   persons.forEach(p => {
-    const pMap = { '杜凯':'dukai','王若蒙':'ruomeng','杨启皎':'yangqijiao','蔡敏':'caimin' };
-    const lMap = { '杜凯':'@杜凯','王若蒙':'@若蒙','杨启皎':'@杨启皎','蔡敏':'@蔡敏' };
+    const pMap = { '杜凯':'dukai','王若蒙':'ruomeng','杨启皎':'yangqijiao','蔡敏':'caimin','大朋':'dapeng' };
+    const lMap = { '杜凯':'@杜凯','王若蒙':'@若蒙','杨启皎':'@杨启皎','蔡敏':'@蔡敏','大朋':'@大朋' };
     const pClass = pMap[p] || 'other';
     const pLabel = lMap[p] || p;
     metaHtml += `<span class="tag person-${pClass}">${pLabel}</span>`;
