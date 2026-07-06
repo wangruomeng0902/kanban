@@ -236,14 +236,21 @@ body {
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>负责人</label>
-        <select id="inputPerson">
-          <option value="">未分配</option>
-          <option value="杜凯">杜凯</option>
-          <option value="王若蒙">王若蒙</option>
-          <option value="杨启皎">杨启皎</option>
-          <option value="蔡敏">蔡敏</option>
-        </select>
+        <label>负责人 <span style="font-size:12px;color:#9ca3af;font-weight:400">（可多选）</span></label>
+        <div id="inputPersonGroup" style="display:flex;flex-wrap:wrap;gap:6px">
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
+            <input type="checkbox" value="杜凯" style="accent-color:#4f46e5"> 杜凯
+          </label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
+            <input type="checkbox" value="王若蒙" style="accent-color:#4f46e5"> 若蒙
+          </label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
+            <input type="checkbox" value="杨启皎" style="accent-color:#4f46e5"> 杨启皎
+          </label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
+            <input type="checkbox" value="蔡敏" style="accent-color:#4f46e5"> 蔡敏
+          </label>
+        </div>
       </div>
       <div class="form-group">
         <label>截止日期</label>
@@ -300,9 +307,8 @@ function getDefaultData() {
     { id: 'w10', title: '与上海/深圳驻守旗舰店的管理者/一线沟通摸排情况，明确后续个体极端/群体事件的应对方式，形成应对预案，梳理与车主之家/交付中心的不同点 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-06-15T10:30:00.000Z' },
     { id: 'w11', title: '将大连和惠州案例整理并与所有安全中台沟通商家风险信息上报问题，个体极端和维稳相关信息需及时上报渠道、同步110或应急做信息研判 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-06-15T10:40:00.000Z' },
     // 7/6 属地周会新增待办
-    { id: 'm0', title: '确认杜凯未完成的待办事项及新的完成时间', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:00:00.000Z' },
-    { id: 'm1a', title: '确认事故 SOP 终版材料相关方是否拉齐，若无问题则提交审批 @王若蒙 Ruomeng Wang', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:05:00.000Z' },
-    { id: 'm1b', title: '确认事故 SOP 终版材料相关方是否拉齐，若无问题则提交审批 @杜凯 Du Du', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:05:00.000Z' },
+    { id: 'm0', title: '确认杜凯未完成的待办事项及新的完成时间', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['王若蒙'], deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:00:00.000Z' },
+    { id: 'm1', title: '确认事故 SOP 终版材料相关方是否拉齐，若无问题则提交审批', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['王若蒙','杜凯'], deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:05:00.000Z' },
     { id: 'm2', title: '与数据组确认 Q3 目标值测算初版，以便属地自行调整', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:10:00.000Z' },
     { id: 'm3', title: '确认提上线汇报的具体时间（初定周五上午）并通知管理者', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:15:00.000Z' },
     { id: 'm4', title: '优化月会材料模板，在 7 月底 8 月初投放使用', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:20:00.000Z' },
@@ -312,12 +318,9 @@ function getDefaultData() {
     { id: 'm8', title: '完成个体极端事件专项的阶段性结论输出', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:40:00.000Z' },
     { id: 'm9', title: '建立 SAG 演练剧本开发群，并明确分工，在下周完成 SAG 演练剧本初稿及时间轴排期 @杜凯 Du Du @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-17', conclusion: '', created: '2026-07-06T09:45:00.000Z' },
     { id: 'm10', title: '在月底前完成 SAG 运营机制 V1.0 的撰写 @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:50:00.000Z' },
-    { id: 'm11a', title: '收集一线对个人成长档案的反馈 @杜凯 Du Du', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:55:00.000Z' },
-    { id: 'm11b', title: '收集一线对个人成长档案的反馈 @杨启皎 Qijiao Yang', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:55:00.000Z' },
-    { id: 'm11c', title: '收集一线对个人成长档案的反馈 @王若蒙 Ruomeng Wang', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:55:00.000Z' },
+    { id: 'm11', title: '收集一线对个人成长档案的反馈', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: ['杜凯','杨启皎','王若蒙'], deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:55:00.000Z' },
     { id: 'm12', title: '补充司法解释二推出后现有平台保障的核心调整内容', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T10:00:00.000Z' },
-    { id: 'm13a', title: '履责率指标合并至尽责指标后的口径调整，需杜凯确认后推进 @王若蒙 Ruomeng Wang', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T10:05:00.000Z' },
-    { id: 'm13b', title: '履责率指标合并至尽责指标后的口径调整，需杜凯确认后推进 @杜凯 Du Du', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T10:05:00.000Z' },
+    { id: 'm13', title: '履责率指标合并至尽责指标后的口径调整，需杜凯确认后推进', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['王若蒙','杜凯'], deadline: '2026-07-13', conclusion: '', created: '2026-07-06T10:05:00.000Z' },
   ];
 }
 
@@ -401,11 +404,17 @@ function formatDeadline(dl) {
   return `📅 ${d.getMonth()+1}/${d.getDate()}`;
 }
 
+function getPersonList(card) {
+  if (!card) return [];
+  if (Array.isArray(card.person)) return card.person.filter(Boolean);
+  if (typeof card.person === 'string' && card.person) return [card.person];
+  if (!card.title) return [];
+  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏)/g);
+  return m ? m.map(s => s.slice(1)).filter((v,i,a) => a.indexOf(v)===i) : [];
+}
 function getPerson(card) {
-  if (card.person) return card.person;
-  if (!card.title) return '';
-  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏)/);
-  return m ? m[1] : '';
+  const list = getPersonList(card);
+  return list.length > 0 ? list[0] : '';
 }
 
 function getStatusLabel(s) {
@@ -439,7 +448,7 @@ function createCardEl(card, isArchive) {
   if (card.status === 'done') el.classList.add('done');
   el.onclick = () => openModal(card);
 
-  const person = getPerson(card);
+  const persons = getPersonList(card);
   const conclusion = card.conclusion || '';
   const dl = formatDeadline(card.deadline);
   const ovTag = isOverdue(card.deadline, card.status);
@@ -450,13 +459,13 @@ function createCardEl(card, isArchive) {
   if (ovTag) metaHtml += `<span class="tag tag-overdue">⚠️ 已逾期</span>`;
   else if (soonTag && dl) metaHtml += `<span class="tag tag-soon">⏰ ${dl.replace('📅 ','')}</span>`;
   else if (dl) metaHtml += `<span style="font-size:11px;color:#6b7280">${dl}</span>`;
-  if (person) {
+  persons.forEach(p => {
     const pMap = { '杜凯':'dukai','王若蒙':'ruomeng','杨启皎':'yangqijiao','蔡敏':'caimin' };
     const lMap = { '杜凯':'@杜凯','王若蒙':'@若蒙','杨启皎':'@杨启皎','蔡敏':'@蔡敏' };
-    const pClass = pMap[person] || 'other';
-    const pLabel = lMap[person] || person;
+    const pClass = pMap[p] || 'other';
+    const pLabel = lMap[p] || p;
     metaHtml += `<span class="tag person-${pClass}">${pLabel}</span>`;
-  }
+  });
 
   const actionsHtml = isArchive
     ? `<button onclick="event.stopPropagation();toggleArchive('${card.id}')" title="移回待办跟进">↩️</button><button class="del" onclick="event.stopPropagation();deleteCard('${card.id}')" title="删除">🗑</button>`
@@ -623,7 +632,10 @@ function render() {
   
   // Followup tab - exclude archived items
   let filtered = personFilter === 'all'
-    ? data.filter(c => !c.archived) : data.filter(c => getPerson(c) === personFilter && !c.archived);
+    ? data.filter(c => !c.archived) : data.filter(c => {
+      const persons = getPersonList(c);
+      return persons.indexOf(personFilter) !== -1 && !c.archived;
+    });
   
   if (showOverdueOnly) {
     filtered = filtered.filter(c => isOverdue(c.deadline, c.status));
@@ -676,7 +688,10 @@ function openModal(card) {
     document.getElementById('inputDesc').value = card.desc || '';
     document.getElementById('inputPriority').value = card.priority || 'medium';
     document.getElementById('inputStatus').value = card.status || 'todo';
-    document.getElementById('inputPerson').value = card.person || '';
+    const persons = getPersonList(card);
+    document.querySelectorAll('#inputPersonGroup input[type=checkbox]').forEach(cb => {
+      cb.checked = persons.includes(cb.value);
+    });
     document.getElementById('inputDeadline').value = card.deadline || '';
     document.getElementById('inputConclusion').value = card.conclusion || '';
     editingId = card.id;
@@ -686,7 +701,7 @@ function openModal(card) {
     document.getElementById('inputDesc').value = '';
     document.getElementById('inputPriority').value = 'medium';
     document.getElementById('inputStatus').value = 'todo';
-    document.getElementById('inputPerson').value = '';
+    document.querySelectorAll('#inputPersonGroup input[type=checkbox]').forEach(cb => { cb.checked = false; });
     document.getElementById('inputDeadline').value = '';
     document.getElementById('inputConclusion').value = '';
     editingId = null;
@@ -705,7 +720,10 @@ function saveCard() {
   const desc = document.getElementById('inputDesc').value.trim();
   const priority = document.getElementById('inputPriority').value;
   const status = document.getElementById('inputStatus').value;
-  const person = document.getElementById('inputPerson').value;
+  const personArr = [];
+  document.querySelectorAll('#inputPersonGroup input[type=checkbox]:checked').forEach(cb => {
+    personArr.push(cb.value);
+  });
   const deadline = document.getElementById('inputDeadline').value;
   const conclusion = document.getElementById('inputConclusion').value.trim();
 
@@ -713,14 +731,14 @@ function saveCard() {
     const idx = data.findIndex(c => c.id === editingId);
     if (idx >= 0) {
       const oldStatus = data[idx].status;
-      data[idx] = { ...data[idx], title, desc, priority, status, person, deadline, conclusion };
+      data[idx] = { ...data[idx], title, desc, priority, status, person: personArr, deadline, conclusion };
       // Auto-archive: when a historical item is marked done
       if (status === 'done' && oldStatus !== 'done' && !isNewTodo(data[idx].created)) {
         data[idx].archived = true;
       }
     }
   } else {
-    data.push({ id: genId(), title, desc, priority, status, person, deadline, conclusion, created: new Date().toISOString() });
+    data.push({ id: genId(), title, desc, priority, status, person: personArr, deadline, conclusion, created: new Date().toISOString() });
   }
   saveData();
   render();
