@@ -24,8 +24,6 @@ body {
   background: #f0f2f5;
   min-height: 100vh;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
 }
 .header {
   display: flex;
@@ -62,10 +60,10 @@ body {
 }
 .stat-card {
   flex: 1; min-width: 140px; background: white; border-radius: 12px;
-  padding: 12px 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  padding: 24px 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
 }
 .stat-card .stat-num {
-  font-size: 26px; font-weight: 700; line-height: 1.2;
+  font-size: 36px; font-weight: 700; line-height: 1.2;
 }
 .stat-card .stat-label {
   font-size: 13px; color: #6b7280; margin-top: 4px;
@@ -82,10 +80,10 @@ body {
 .stat-card.stat-done { border-top: 3px solid #9ca3af; }
 .stat-card.stat-done .stat-num { color: #9ca3af; }
 
-.board { display: flex; flex-direction: column; gap: 12px; flex: 1; min-height: 0; }
+.board { display: flex; flex-direction: column; gap: 12px; }
 .module {
   background: #e8eaf0; border-radius: 12px; padding: 12px;
-  flex: 1; min-height: 100px; display: flex; flex-direction: column;
+  max-height: 50vh; display: flex; flex-direction: column;
 }
 .module-header {
   display: flex; justify-content: space-between; align-items: center;
@@ -95,12 +93,11 @@ body {
 .module-header .count { background: rgba(0,0,0,0.08); padding: 2px 10px; border-radius: 12px; font-size: 13px; }
 .module.new-module { border-top: 3px solid #4f46e5; }
 .module.history-module { border-top: 3px solid #9ca3af; }
-.module-body { flex: 1; overflow-y: auto; padding: 4px; min-height: 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; }
+.module-body { flex: 1; overflow-y: auto; padding: 4px; min-height: 100px; }
 .sub-hdr {
   font-size: 12px; font-weight: 600; padding: 5px 8px 3px;
   position: sticky; top: 0; z-index: 1;
-  margin-bottom: 0; border-radius: 6px;
-  grid-column: 1 / -1;
+  margin-bottom: 4px; border-radius: 6px;
 }
 .sub-hdr .sub-count {
   font-weight: 400; font-size: 11px; margin-left: 4px;
@@ -111,7 +108,7 @@ body {
 .sub-hdr.sub-done { background: #f3f4f6; color: #6b7280; }
 
 .card {
-  background: white; border-radius: 10px; padding: 10px; break-inside: avoid;
+  background: white; border-radius: 10px; padding: 12px; margin-bottom: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08); cursor: pointer;
   transition: all 0.15s; position: relative;
 }
@@ -136,7 +133,6 @@ body {
 .person-ruomeng { background: #fff7ed; color: #ea580c; }
 .person-yangqijiao { background: #ecfdf5; color: #059669; }
 .person-other { background: #f3f4f6; color: #6b7280; }
-.person-dapeng { background: #f3e8ff; color: #7c3aed; }
 .card-actions {
   display: flex; gap: 4px; margin-top: 6px;
   opacity: 0; transition: opacity 0.2s;
@@ -192,19 +188,30 @@ body {
       <button class="btn" data-person="王若蒙" onclick="setPersonFilter('王若蒙')">🟠 若蒙</button>
       <button class="btn" data-person="杨启皎" onclick="setPersonFilter('杨启皎')">🟢 杨启皎</button>
       <button class="btn" data-person="蔡敏" onclick="setPersonFilter('蔡敏')">🟤 蔡敏</button>
-      <button class="btn" data-person="大朋" onclick="setPersonFilter('大朋')">🟣 大朋</button>
     </span>
     <button class="btn" id="overdueBtn" onclick="toggleOverdue()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">⏰ 逾期</button>
     <button class="btn" id="incompleteBtn" onclick="toggleIncomplete()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">📋 未完成</button>
     <button class="btn" id="doneBtn" onclick="toggleDone()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">✅ 已完成</button>
-    <button class="btn btn-outline btn-sm" onclick="importJuly6Meeting()" title="导入7.6周会新增待办">📥 导入7.6</button>
+    <button class="btn btn-outline btn-sm" onclick="importWeekData()" title="导入6.15周会历史待办">📥 导入历史</button>
     <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
+    <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;margin-right:4px">
+      👤 <select id="currentUserSelect" onchange="setCurrentUser(this.value)" style="padding:4px 8px;border:1.5px solid #d1d5db;border-radius:6px;font-size:13px;outline:none">
+        <option value="">谁在使用？</option>
+        <option value="杜凯">杜凯</option>
+        <option value="王若蒙">王若蒙</option>
+        <option value="杨启皎">杨启皎</option>
+        <option value="蔡敏">蔡敏</option>
+      </select>
+    </span>
     <button class="btn btn-primary" onclick="openModal()">+ 新建</button>
   </div>
 </div>
 
 <div class="stats-row" id="statsRow"></div>
 <div class="board" id="board"></div>
+
+<!-- ===== Supabase JS SDK (仅当配置了密钥时启用共享数据) ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <!-- Modal -->
 <div class="modal-overlay" id="modal">
@@ -238,24 +245,14 @@ body {
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>负责人 <span style="font-size:12px;color:#9ca3af;font-weight:400">（可多选）</span></label>
-        <div id="inputPersonGroup" style="display:flex;flex-wrap:wrap;gap:6px">
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
-            <input type="checkbox" value="杜凯" style="accent-color:#4f46e5"> 杜凯
-          </label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
-            <input type="checkbox" value="王若蒙" style="accent-color:#4f46e5"> 若蒙
-          </label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
-            <input type="checkbox" value="杨启皎" style="accent-color:#4f46e5"> 杨启皎
-          </label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
-            <input type="checkbox" value="蔡敏" style="accent-color:#4f46e5"> 蔡敏
-          </label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:6px;border:1.5px solid #d1d5db;background:white;transition:all 0.15s">
-            <input type="checkbox" value="大朋" style="accent-color:#4f46e5"> 大朋
-          </label>
-        </div>
+        <label>负责人</label>
+        <select id="inputPerson">
+          <option value="">未分配</option>
+          <option value="杜凯">杜凯</option>
+          <option value="王若蒙">王若蒙</option>
+          <option value="杨启皎">杨启皎</option>
+          <option value="蔡敏">蔡敏</option>
+        </select>
       </div>
       <div class="form-group">
         <label>截止日期</label>
@@ -274,7 +271,18 @@ body {
 </div>
 
 <script>
-const STORAGE_KEY = '***';
+// ============================================================
+//  🗄️  数据存储配置
+//  不填则使用 localStorage（本地存储，仅你可见）
+//  填了 Supabase 则全部门共享数据
+// ============================================================
+const SUPABASE_URL = '';  // 例: 'https://xxxxx.supabase.co'
+const SUPABASE_ANON_KEY = '';  // 例: 'eyJhbGciOi...'
+// ============================================================
+
+const STORAGE_KEY = 'kanban_todo_data';
+const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+let supabaseClient = null;
 
 let data = [];
 let editingId = null;
@@ -283,6 +291,22 @@ let showOverdueOnly = false;
 let showIncompleteOnly = false;
 let showDoneOnly = false;
 let currentTab = 'followup';
+let currentUserName = localStorage.getItem('kanban_user') || '';
+let isSharedMode = false;
+
+// 初始化当前用户
+if (currentUserName) {
+  document.getElementById('currentUserSelect').value = currentUserName;
+}
+
+function setCurrentUser(name) {
+  currentUserName = name;
+  localStorage.setItem('kanban_user', name);
+}
+
+function getCurrentUser() {
+  return currentUserName;
+}
 
 function getDefaultData() {
   const now = new Date().toISOString();
@@ -306,38 +330,85 @@ function getDefaultData() {
     { id: 'w5', title: '和T2负责人预约时间，确定区域提上线专项的时间（暂定7月第二周） @蔡敏', desc: '蔡敏/6.15属地周会', priority: 'medium', status: 'todo', person: '蔡敏', deadline: '', conclusion: '', created: '2026-06-15T09:40:00.000Z' },
     { id: 'w6', title: '梳理影响一三类结案周期的所有因素 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-06-22', conclusion: '职伤：职伤案件全量开成后结案周期拉长。人力分布：属地人力分布不均，未决跨度45-108。', created: '2026-06-15T09:50:00.000Z' },
     { id: 'w7', title: '跟进6月200天以上未决案件区域梳理，组织区域梳理，并评估Q3专项开展节奏 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杜凯', deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:00:00.000Z' },
-    { id: 'w8', title: '跟进事故新SOP上线后的数据口径调整，同步数据进行数据口径调整 @王若蒙 Ruomeng Wang @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: ['王若蒙','杜凯'], deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:10:00.000Z' },
+    { id: 'w8a', title: '跟进事故新SOP上线后的数据口径调整，同步数据进行数据口径调整 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杜凯', deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:10:00.000Z' },
+    { id: 'w8b', title: '跟进事故新SOP上线后的数据口径调整，同步数据进行数据口径调整 @王若蒙 Ruomeng Wang', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '王若蒙', deadline: '2026-06-30', conclusion: '', created: '2026-06-15T10:10:00.000Z' },
     { id: 'w9', title: '与方林沟通，向复审环节提需求，确保审核时查看医院退款等材料 @杜凯 Du Du', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杜凯', deadline: '2026-06-19', conclusion: '初步沟通了方向，需下周前往北京和方林当面详聊', created: '2026-06-15T10:20:00.000Z' },
     { id: 'w10', title: '与上海/深圳驻守旗舰店的管理者/一线沟通摸排情况，明确后续个体极端/群体事件的应对方式，形成应对预案，梳理与车主之家/交付中心的不同点 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-06-15T10:30:00.000Z' },
     { id: 'w11', title: '将大连和惠州案例整理并与所有安全中台沟通商家风险信息上报问题，个体极端和维稳相关信息需及时上报渠道、同步110或应急做信息研判 @杨启皎', desc: '蔡敏/6.15属地周会', priority: 'high', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-06-15T10:40:00.000Z' },
-    // 7/6 属地周会新增待办
-    { id: 'm0', title: '确认杜凯未完成的待办事项及新的完成时间', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:00:00.000Z' },
-    { id: 'm1', title: '确认事故 SOP 终版材料相关方是否拉齐，若无问题则提交审批 @王若蒙 Ruomeng Wang @杜凯 Du Du', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['王若蒙','杜凯'], deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:05:00.000Z' },
-    { id: 'm2', title: '与数据组确认 Q3 目标值测算初版，以便属地自行调整', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:10:00.000Z' },
-    { id: 'm3', title: '确认提上线汇报的具体时间（初定周五上午）并通知管理者', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '2026-07-07', conclusion: '', created: '2026-07-06T09:15:00.000Z' },
-    { id: 'm4', title: '优化月会材料模板，在 7 月底 8 月初投放使用', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '王若蒙', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:20:00.000Z' },
-    { id: 'm5', title: '追踪各业务中台关于个体极端事件上报范围的调整情况', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T09:25:00.000Z' },
-    { id: 'm6', title: '与安响团队拉齐安全手机使用规范', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T09:30:00.000Z' },
-    { id: 'm7', title: '确认安响团队来成都沟通的具体议题与材料准备情况', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '2026-07-13', conclusion: '', created: '2026-07-06T09:35:00.000Z' },
-    { id: 'm8', title: '完成个体极端事件专项的阶段性结论输出', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:40:00.000Z' },
-    { id: 'm9', title: '建立 SAG 演练剧本开发群，并明确分工，在下周完成 SAG 演练剧本初稿及时间轴排期 @杜凯 Du Du @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['杜凯','大朋'], deadline: '2026-07-17', conclusion: '', created: '2026-07-06T09:45:00.000Z' },
-    { id: 'm10', title: '在月底前完成 SAG 运营机制 V1.0 的撰写 @大朋', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['大朋'], deadline: '2026-07-24', conclusion: '', created: '2026-07-06T09:50:00.000Z' },
-    { id: 'm11', title: '收集一线对个人成长档案的反馈 @杜凯 Du Du @杨启皎 Qijiao Yang @王若蒙 Ruomeng Wang', desc: '7.6属地周会', priority: 'medium', status: 'todo', person: ['杜凯','杨启皎','王若蒙'], deadline: '2026-07-10', conclusion: '', created: '2026-07-06T09:55:00.000Z' },
-    { id: 'm12', title: '补充司法解释二推出后现有平台保障的核心调整内容', desc: '7.6属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-07-10', conclusion: '', created: '2026-07-06T10:00:00.000Z' },
-    { id: 'm13', title: '履责率指标合并至尽责指标后的口径调整，需杜凯确认后推进 @王若蒙 Ruomeng Wang @杜凯 Du Du', desc: '7.6属地周会', priority: 'high', status: 'todo', person: ['王若蒙','杜凯'], deadline: '2026-07-13', conclusion: '', created: '2026-07-06T10:05:00.000Z' },
   ];
 }
 
-function loadData() {
+async function loadData() {
+  if (USE_SUPABASE && supabaseClient) {
+    try {
+      const { data: rows, error } = await supabaseClient.from('todos').select('*');
+      if (error) throw error;
+      if (rows && rows.length > 0) {
+        data = rows;
+        isSharedMode = true;
+        render();
+        return;
+      }
+    } catch (e) {
+      console.warn('Supabase 加载失败，降级到 localStorage', e);
+    }
+  }
+  // localStorage fallback
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     data = raw ? JSON.parse(raw) : getDefaultData();
   } catch { data = getDefaultData(); }
   data = data.filter(c => c && c.title && c.id);
+  isSharedMode = false;
+  render();
 }
 
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+async function saveData() {
+  if (isSharedMode && supabaseClient) {
+    try {
+      const { error } = await supabaseClient.from('todos').upsert(data, { onConflict: 'id' });
+      if (error) throw error;
+    } catch (e) {
+      console.error('Supabase 保存失败', e);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  } else {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+}
+
+async function upsertCard(card) {
+  if (isSharedMode && supabaseClient) {
+    try {
+      card.updated_at = new Date().toISOString();
+      const { error } = await supabaseClient.from('todos').upsert(card, { onConflict: 'id' });
+      if (error) throw error;
+    } catch (e) {
+      console.error('Supabase 保存卡片失败', e);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  } else {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+}
+
+async function deleteCardFromDB(id) {
+  if (isSharedMode && supabaseClient) {
+    try {
+      const { error } = await supabaseClient.from('todos').delete().eq('id', id);
+      if (error) throw error;
+    } catch (e) {
+      console.error('Supabase 删除失败', e);
+    }
+  }
+}
+
+function subscribeRealtime() {
+  if (!USE_SUPABASE || !supabaseClient) return;
+  supabaseClient
+    .channel('todos-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'todos' }, () => { loadData(); })
+    .subscribe();
 }
 
 function genId() {
@@ -408,17 +479,11 @@ function formatDeadline(dl) {
   return `📅 ${d.getMonth()+1}/${d.getDate()}`;
 }
 
-function getPersonList(card) {
-  if (!card) return [];
-  if (Array.isArray(card.person)) return card.person.filter(Boolean);
-  if (typeof card.person === 'string' && card.person) return [card.person];
-  if (!card.title) return [];
-  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋)/g);
-  return m ? m.map(s => s.slice(1)).filter((v,i,a) => a.indexOf(v)===i) : [];
-}
 function getPerson(card) {
-  const list = getPersonList(card);
-  return list.length > 0 ? list[0] : '';
+  if (card.person) return card.person;
+  if (!card.title) return '';
+  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏)/);
+  return m ? m[1] : '';
 }
 
 function getStatusLabel(s) {
@@ -436,11 +501,11 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
-function toggleArchive(id) {
+async function toggleArchive(id) {
   const card = data.find(c => c.id === id);
   if (!card) return;
   card.archived = !card.archived;
-  saveData();
+  await upsertCard(card);
   render();
 }
 
@@ -452,7 +517,7 @@ function createCardEl(card, isArchive) {
   if (card.status === 'done') el.classList.add('done');
   el.onclick = () => openModal(card);
 
-  const persons = getPersonList(card);
+  const person = getPerson(card);
   const conclusion = card.conclusion || '';
   const dl = formatDeadline(card.deadline);
   const ovTag = isOverdue(card.deadline, card.status);
@@ -463,13 +528,13 @@ function createCardEl(card, isArchive) {
   if (ovTag) metaHtml += `<span class="tag tag-overdue">⚠️ 已逾期</span>`;
   else if (soonTag && dl) metaHtml += `<span class="tag tag-soon">⏰ ${dl.replace('📅 ','')}</span>`;
   else if (dl) metaHtml += `<span style="font-size:11px;color:#6b7280">${dl}</span>`;
-  persons.forEach(p => {
-    const pMap = { '杜凯':'dukai','王若蒙':'ruomeng','杨启皎':'yangqijiao','蔡敏':'caimin','大朋':'dapeng' };
-    const lMap = { '杜凯':'@杜凯','王若蒙':'@若蒙','杨启皎':'@杨启皎','蔡敏':'@蔡敏','大朋':'@大朋' };
-    const pClass = pMap[p] || 'other';
-    const pLabel = lMap[p] || p;
+  if (person) {
+    const pMap = { '杜凯':'dukai','王若蒙':'ruomeng','杨启皎':'yangqijiao','蔡敏':'caimin' };
+    const lMap = { '杜凯':'@杜凯','王若蒙':'@若蒙','杨启皎':'@杨启皎','蔡敏':'@蔡敏' };
+    const pClass = pMap[person] || 'other';
+    const pLabel = lMap[person] || person;
     metaHtml += `<span class="tag person-${pClass}">${pLabel}</span>`;
-  });
+  }
 
   const actionsHtml = isArchive
     ? `<button onclick="event.stopPropagation();toggleArchive('${card.id}')" title="移回待办跟进">↩️</button><button class="del" onclick="event.stopPropagation();deleteCard('${card.id}')" title="删除">🗑</button>`
@@ -537,51 +602,28 @@ function renderArchive() {
   
   const archived = data.filter(c => c.archived);
   
-  // Group by month
-  const monthGroups = {};
-  archived.forEach(card => {
-    if (!card.created) return;
-    const d = new Date(card.created);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    const label = `${d.getFullYear()}年${d.getMonth()+1}月`;
-    if (!monthGroups[key]) monthGroups[key] = { label, items: [] };
-    monthGroups[key].items.push(card);
-  });
-  
-  // Sort months newest first
-  const sortedMonths = Object.keys(monthGroups).sort().reverse();
-  
-  board.innerHTML = `
-    <div class="stats-row" style="margin-bottom:12px">
-      <div class="stat-card stat-done" style="min-width:100%">
-        <div class="stat-num">${archived.length}</div>
-        <div class="stat-label">📦 已归档待办总数</div>
-      </div>
+  board.innerHTML = '';
+  const module = document.createElement('div');
+  module.className = 'module history-module';
+  module.style.flex = '1';
+  module.innerHTML = `
+    <div class="module-header">
+      <span>📦 归档 &nbsp;<span style="font-size:12px;color:#9ca3af;font-weight:400">已完成的历史待办</span></span>
+      <span class="count">${archived.length}</span>
     </div>
+    <div class="module-body" id="archiveBody"></div>
   `;
+  board.appendChild(module);
   
+  const body = document.getElementById('archiveBody');
   if (archived.length === 0) {
-    board.innerHTML += '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:50px 10px">暂无归档记录</div>';
+    body.innerHTML = '<div class="empty">暂无归档记录</div>';
     return;
   }
   
-  sortedMonths.forEach(key => {
-    const g = monthGroups[key];
-    const monthDiv = document.createElement('div');
-    monthDiv.className = 'module';
-    monthDiv.style.cssText = 'display:flex;flex-direction:column;background:#e8eaf0;border-radius:12px;padding:12px';
-    monthDiv.innerHTML = `
-      <div class="module-header" style="flex-shrink:0">
-        <span>📅 ${g.label}</span>
-        <span class="count">${g.items.length}</span>
-      </div>
-      <div class="module-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start;flex:1;overflow-y:auto;padding:4px;min-height:0"></div>
-    `;
-    const body = monthDiv.querySelector('.module-body');
-    g.items.reverse().forEach(card => {
-      body.appendChild(createCardEl(card, true));
-    });
-    board.appendChild(monthDiv);
+  archived.sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+  archived.forEach(card => {
+    body.appendChild(createCardEl(card, true));
   });
 }
 
@@ -609,12 +651,18 @@ function appendGrouped(container, items) {
   }
   
   const groups = [
-    { key: 'pending', items: [], icon: '📝', label: '进行中', css: 'sub-todo' },
+    { key: 'todo', items: [], icon: '📝', label: '待办', css: 'sub-todo' },
+    { key: 'doing_ok', items: [], icon: '🔄', label: '进行中（未逾期）', css: 'sub-doing' },
+    { key: 'doing_ov', items: [], icon: '⏰', label: '进行中（已逾期）', css: 'sub-overdue' },
     { key: 'done', items: [], icon: '✅', label: '已完成', css: 'sub-done' },
   ];
   
   items.forEach(card => {
     if (card.status === 'done') {
+      groups[3].items.push(card);
+    } else if (card.status === 'doing' && isOverdue(card.deadline, card.status)) {
+      groups[2].items.push(card);
+    } else if (card.status === 'doing') {
       groups[1].items.push(card);
     } else {
       groups[0].items.push(card);
@@ -653,10 +701,7 @@ function render() {
   
   // Followup tab - exclude archived items
   let filtered = personFilter === 'all'
-    ? data.filter(c => !c.archived) : data.filter(c => {
-      const persons = getPersonList(c);
-      return persons.indexOf(personFilter) !== -1 && !c.archived;
-    });
+    ? data.filter(c => !c.archived) : data.filter(c => getPerson(c) === personFilter && !c.archived);
   
   if (showOverdueOnly) {
     filtered = filtered.filter(c => isOverdue(c.deadline, c.status));
@@ -709,10 +754,7 @@ function openModal(card) {
     document.getElementById('inputDesc').value = card.desc || '';
     document.getElementById('inputPriority').value = card.priority || 'medium';
     document.getElementById('inputStatus').value = card.status || 'todo';
-    const persons = getPersonList(card);
-    document.querySelectorAll('#inputPersonGroup input[type=checkbox]').forEach(cb => {
-      cb.checked = persons.includes(cb.value);
-    });
+    document.getElementById('inputPerson').value = card.person || '';
     document.getElementById('inputDeadline').value = card.deadline || '';
     document.getElementById('inputConclusion').value = card.conclusion || '';
     editingId = card.id;
@@ -722,7 +764,7 @@ function openModal(card) {
     document.getElementById('inputDesc').value = '';
     document.getElementById('inputPriority').value = 'medium';
     document.getElementById('inputStatus').value = 'todo';
-    document.querySelectorAll('#inputPersonGroup input[type=checkbox]').forEach(cb => { cb.checked = false; });
+    document.getElementById('inputPerson').value = getCurrentUser() || '';
     document.getElementById('inputDeadline').value = '';
     document.getElementById('inputConclusion').value = '';
     editingId = null;
@@ -735,16 +777,13 @@ function closeModal() {
   editingId = null;
 }
 
-function saveCard() {
+async function saveCard() {
   const title = document.getElementById('inputTitle').value.trim();
   if (!title) { alert('请输入标题'); return; }
   const desc = document.getElementById('inputDesc').value.trim();
   const priority = document.getElementById('inputPriority').value;
   const status = document.getElementById('inputStatus').value;
-  const personArr = [];
-  document.querySelectorAll('#inputPersonGroup input[type=checkbox]:checked').forEach(cb => {
-    personArr.push(cb.value);
-  });
+  const person = document.getElementById('inputPerson').value;
   const deadline = document.getElementById('inputDeadline').value;
   const conclusion = document.getElementById('inputConclusion').value.trim();
 
@@ -752,24 +791,25 @@ function saveCard() {
     const idx = data.findIndex(c => c.id === editingId);
     if (idx >= 0) {
       const oldStatus = data[idx].status;
-      data[idx] = { ...data[idx], title, desc, priority, status, person: personArr, deadline, conclusion };
-      // Auto-archive: when a historical item is marked done
+      data[idx] = { ...data[idx], title, desc, priority, status, person, deadline, conclusion };
       if (status === 'done' && oldStatus !== 'done' && !isNewTodo(data[idx].created)) {
         data[idx].archived = true;
       }
+      await upsertCard(data[idx]);
     }
   } else {
-    data.push({ id: genId(), title, desc, priority, status, person: personArr, deadline, conclusion, created: new Date().toISOString() });
+    const newCard = { id: genId(), title, desc, priority, status, person: person || getCurrentUser() || '', deadline, conclusion, archived: false, created: new Date().toISOString() };
+    data.push(newCard);
+    await upsertCard(newCard);
   }
-  saveData();
-  render();
   closeModal();
+  await loadData();
 }
 
-function deleteCard(id) {
+async function deleteCard(id) {
   if (!confirm('确定删除这条待办？')) return;
   data = data.filter(c => c.id !== id);
-  saveData();
+  await deleteCardFromDB(id);
   render();
 }
 
@@ -784,48 +824,43 @@ function recordConclusion(id) {
   render();
 }
 
-function importWeekData() {
+async function importWeekData() {
   const newTodos = getDefaultData().filter(d => d.id.startsWith('w'));
   const existingIds = new Set(data.map(d => d.id));
   let added = 0;
-  newTodos.forEach(t => {
+  for (const t of newTodos) {
     if (!existingIds.has(t.id)) {
       data.push(t);
+      await upsertCard(t);
       added++;
     }
-  });
+  }
   if (added === 0) { alert('历史待办已导入，没有新增数据'); return; }
-  saveData();
   render();
   alert(`✅ 已导入 ${added} 条6.15周会历史待办`);
 }
 
-function importJuly6Meeting() {
-  const newTodos = getDefaultData().filter(d => d.id.startsWith('m'));
-  const existingIds = new Set(data.map(d => d.id));
-  let added = 0;
-  newTodos.forEach(t => {
-    if (!existingIds.has(t.id)) {
-      data.push(t);
-      added++;
-    }
-  });
-  if (added === 0) { alert('7.6周会新增待办已导入，没有新增数据'); return; }
-  saveData();
-  render();
-  alert(`✅ 已导入 ${added} 条7.6属地周会新增待办`);
-}
-
-function clearAll() {
+async function clearAll() {
   if (!confirm('确定清空所有待办？此操作不可恢复！')) return;
+  const ids = data.map(c => c.id);
   data = [];
-  saveData();
+  for (const id of ids) {
+    await deleteCardFromDB(id);
+  }
   render();
 }
 
 // Init
-loadData();
-render();
+if (USE_SUPABASE && typeof supabase !== 'undefined') {
+  const { createClient } = supabase;
+  supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+(async function() {
+  await loadData();
+  subscribeRealtime();
+  render();
+})();
 
 document.getElementById('modal').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
