@@ -312,6 +312,8 @@ function getCurrentUser() {
 function getDefaultData() {
   const now = new Date().toISOString();
   return [
+    // 11/4 新增待办
+    { id: 'm1104r01', title: '迭代风险治理工单结案标准，使标准更明确 @杨启皎', desc: '日常工作 | 发布日期: 11月4日', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '', conclusion: '', created: '2026-11-04T05:06:00.000Z' },
     // 6/22 本周待办
     { id: 's0', title: '完成4月前后回流案件24小时内加急率、风险外溢率对比数据，周四会议前同步 @杜凯 Du Du', desc: '6.22属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-06-25', conclusion: '', created: '2026-06-22T08:00:00.000Z' },
     { id: 's1', title: '收集华东、鲁苏区域安创口径缺失的卡点案例及具体对接人信息，形成需求文档 @杜凯 Du Du', desc: '6.22属地周会', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-06-26', conclusion: '', created: '2026-06-22T08:05:00.000Z' },
