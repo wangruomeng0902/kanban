@@ -208,6 +208,8 @@ body {
   </div>
 </div>
 
+<div id="modeNotice" style="display:none;margin:10px 16px 0;padding:8px 12px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;border-radius:8px;font-size:12px;line-height:1.6"></div>
+
 <div class="stats-row" id="statsRow"></div>
 <div class="board" id="board"></div>
 
@@ -354,6 +356,36 @@ function getDefaultData() {
   ];
 }
 
+const SEED_APPLIED_KEY = 'kanban_seed_applied_ids';
+
+// 把源码里的种子待办合并进本地数据（按 id 去重；用户自己删掉的不会再复活）
+function mergeSeedData(list) {
+  let applied = [];
+  try { applied = JSON.parse(localStorage.getItem(SEED_APPLIED_KEY) || '[]'); } catch (e) { applied = []; }
+  const appliedSet = new Set(Array.isArray(applied) ? applied : []);
+  const existing = new Set(list.map(c => c.id));
+  let added = 0;
+  for (const seed of getDefaultData()) {
+    if (existing.has(seed.id)) { appliedSet.add(seed.id); continue; }
+    if (appliedSet.has(seed.id)) continue;
+    list.push(seed);
+    existing.add(seed.id);
+    appliedSet.add(seed.id);
+    added++;
+  }
+  try { localStorage.setItem(SEED_APPLIED_KEY, JSON.stringify([...appliedSet])); } catch (e) {}
+  return added;
+}
+
+function showModeNotice(addedCount) {
+  const el = document.getElementById('modeNotice');
+  if (!el) return;
+  const extra = addedCount > 0 ? ` 本次已自动补入 <b>${addedCount}</b> 条新待办。` : '';
+  el.innerHTML = `⚠️ 当前为本地模式：云端共享数据不可用，改动只保存在这台浏览器。${extra}`
+    + ` <a href="javascript:void(0)" onclick="document.getElementById(\'modeNotice\').style.display=\'none\'" style="color:#92400e;text-decoration:underline;margin-left:6px">知道了</a>`;
+  el.style.display = 'block';
+}
+
 async function loadData() {
   if (USE_SUPABASE && supabaseClient) {
     try {
@@ -375,7 +407,12 @@ async function loadData() {
     data = raw ? JSON.parse(raw) : getDefaultData();
   } catch { data = getDefaultData(); }
   data = data.filter(c => c && c.title && c.id);
+  const addedCount = mergeSeedData(data);
   isSharedMode = false;
+  if (addedCount > 0) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  showModeNotice(addedCount);
   render();
 }
 
