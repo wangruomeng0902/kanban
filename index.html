@@ -291,7 +291,10 @@ const SUPABASE_ANON_KEY = 'sb_publishable_AOOXnoLr0yaeRgBPnZU7Ew_PVYKnyvl';
 // ============================================================
 
 const STORAGE_KEY = 'kanban_todo_data';
-const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+// 该 Supabase 项目已失效（域名 NXDOMAIN），开启会让首屏请求挂起、看板空白，
+// 故显式关闭；将来迁移到新后端时把这里改回 true 并填入新地址/密钥即可。
+const SUPABASE_ENABLED = false;
+const USE_SUPABASE = SUPABASE_ENABLED && !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 let supabaseClient = null;
 
 let data = [];
@@ -396,7 +399,10 @@ function showModeNotice(addedCount) {
 async function loadData() {
   if (USE_SUPABASE && supabaseClient) {
     try {
-      const { data: rows, error } = await supabaseClient.from('todos').select('*');
+      const { data: rows, error } = await Promise.race([
+        supabaseClient.from('todos').select('*'),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('Supabase 请求超时')), 4000)),
+      ]);
       if (error) throw error;
       if (rows && rows.length > 0) {
         data = rows;
