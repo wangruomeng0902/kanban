@@ -194,6 +194,9 @@ body {
     <button class="btn" id="incompleteBtn" onclick="toggleIncomplete()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">📋 未完成</button>
     <button class="btn" id="doneBtn" onclick="toggleDone()" style="font-size:12px;padding:4px 12px;border-radius:20px;border:1.5px solid #d1d5db;background:transparent;color:#6b7280;cursor:pointer;font-weight:500;transition:all 0.2s">✅ 已完成</button>
     <button class="btn btn-outline btn-sm" onclick="importWeekData()" title="导入历史待办及0706周会待办">📥 导入历史</button>
+    <button class="btn btn-outline btn-sm" onclick="exportBackup()" title="把当前全部待办导出为 JSON 备份">💾 导出备份</button>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFile').click()" title="从 JSON 备份恢复，按 id 合并，不会删除现有卡片">📂 恢复备份</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
     <button class="btn btn-outline btn-sm" onclick="clearAll()">🗑 清空</button>
     <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;margin-right:4px">
       👤 <select id="currentUserSelect" onchange="setCurrentUser(this.value)" style="padding:4px 8px;border:1.5px solid #d1d5db;border-radius:6px;font-size:13px;outline:none">
@@ -288,8 +291,7 @@ body {
     </div>
   </div>
 
-<!-- ===== Supabase JS SDK (仅当配置了密钥时启用共享数据) ===== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- Supabase SDK 已移除：项目域名失效（NXDOMAIN），且当前为纯本地模式，避免 SDK 加载卡住首屏 -->
 
 <!-- Modal -->
 <div class="modal-overlay" id="modal">
@@ -394,6 +396,34 @@ function getCurrentUser() {
 function getDefaultData() {
   const now = new Date().toISOString();
   return [
+    // ===== 8-10月恢复数据（从历史会话备份中找回）=====
+    { id: 'j1721566001', title: '完成事故流程材料的撰写与台账填写，并同步给黄彬。 @杜凯 Du Du', desc: '7.20属地规划周会', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-07-27', conclusion: '', created: '2026-07-20T08:00:00.000Z' },
+    { id: 'j1721566002', title: '统筹整合各小组交付策略，形成最终知识库版本。 @杜凯 @杨启皎', desc: '7.20属地规划周会', priority: 'medium', status: 'todo', person: '杜凯,杨启皎', deadline: '2026-07-27', conclusion: '', created: '2026-07-20T08:05:00.000Z' },
+    { id: 'j1721566004', title: '完成突发疾病涉 SU 演练剧本的撰写。 @杜凯 Du Du @大朋', desc: '7.20属地规划周会', priority: 'medium', status: 'todo', person: '杜凯,大朋', deadline: '2026-07-27', conclusion: '', created: '2026-07-20T08:15:00.000Z' },
+    { id: 'j1721566005', title: '核对鲁苏区触达率异常数据 @杨启皎 Qijiao Yang', desc: '7.20属地规划周会', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '2026-07-27', conclusion: '', created: '2026-07-20T08:20:00.000Z' },
+    { id: 'm0907r01', title: '优化风险案件监控机制管理办法初稿，并研究AI抓取风险因子的技术方案', desc: '9.7属地规划周会 | 发布日期: 9月7日', priority: 'high', status: 'todo', person: '大朋', deadline: '2026-09-14', conclusion: '', created: '2026-09-07T09:00:00.000Z' },
+    { id: 'm0907r02', title: '研究并推广浩源开发的日维度闪报监控工具', desc: '9.7属地规划周会 | 发布日期: 9月7日', priority: 'high', status: 'doing', person: '大朋', deadline: '2026-09-14', conclusion: '', created: '2026-09-07T09:00:00.000Z' },
+    { id: 'm0907r03', title: '盘点小尖刀的考核指标', desc: '9.7属地规划周会 | 发布日期: 9月7日', priority: 'high', status: 'todo', person: '姜传宏', deadline: '2026-09-14', conclusion: '', created: '2026-09-07T09:00:00.000Z' },
+    { id: 'm0910r01', title: '分析华西区车管人时数据与区域反馈承压体感不一致的原因', desc: '9.10属地规划周会 | 发布日期: 9月10日', priority: 'high', status: 'done', person: '杜凯', deadline: '2026-09-17', conclusion: '', created: '2026-09-10T09:00:00.000Z', archived: true },
+    { id: 'm0910r02', title: '收集区域管理者及一线对于加急和举手的意见，梳理两条线相关规则，判断是否有风险盲区，下周规划周会上进行讨论，决策是否需要优化调整', desc: '9.10属地规划周会 | 发布日期: 9月10日', priority: 'high', status: 'done', person: '杜凯,杨启皎', deadline: '2026-09-17', conclusion: '', created: '2026-09-10T09:00:00.000Z', archived: true },
+    { id: 'm0910r03', title: '将分享的AI应用场景补充进AI应用汇总材料', desc: '9.10属地规划周会 | 发布日期: 9月10日', priority: 'high', status: 'done', person: '王若蒙', deadline: '2026-09-17', conclusion: '', created: '2026-09-10T09:00:00.000Z', archived: true },
+    { id: 'm0910r04', title: '下周输出一版关于研判环节执行情况的报告，并评估模板优化需求', desc: '9.10属地规划周会 | 发布日期: 9月10日', priority: 'high', status: 'done', person: '杨启皎', deadline: '2026-09-17', conclusion: '', created: '2026-09-10T09:00:00.000Z', archived: true },
+    { id: 'm0915r01', title: '确定SAG双周会的固定召开时间', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'todo', person: '大朋', deadline: '2026-09-18', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm0915r02', title: '完成SAG双周会的会议议程机制设计', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'todo', person: '大朋', deadline: '2026-09-18', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm0915r03', title: '梳理清楚风险案件自动抓取工具的详细逻辑', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'todo', person: '大朋', deadline: '2026-09-18', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm0915r04', title: '本周五前若业管与GA无反馈，则按原有逻辑启动昆明交付策略的产出，9月30日前完成昆明交付策略的材料整理与加工', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'doing', person: '大朋', deadline: '2026-09-30', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm0915r05', title: '与小尖刀团队对齐爆单机制方案', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'todo', person: '姜传宏', deadline: '', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm0915r06', title: '跟进所有区总关于"闪报"工具的使用进度及卡点，跟进闪报产品迁代进度', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'doing', person: '大朋', deadline: '', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm0915r07', title: '重点关注综处加急回复质量的数据，并进行专项分析', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'done', person: '王若蒙', deadline: '', conclusion: '', created: '2026-09-15T02:00:00.000Z', archived: true },
+    { id: 'm0915r08', title: '梳理线上可向线下（含SAG）派发的协作子任务清单及流转标准，制定线上与线下的协作机制文档', desc: '日常工作 | 发布日期: 9月15日', priority: 'high', status: 'done', person: '杜凯,姜传宏', deadline: '', conclusion: '', created: '2026-09-15T02:00:00.000Z' },
+    { id: 'm1015r01', title: '结合各区域专项总结风险看清环节的实践与标准，形成通用可复用的合力方案', desc: '日常工作 | 发布日期: 10月15日', priority: 'high', status: 'todo', person: '杨启皎', deadline: '', conclusion: '', created: '2026-10-15T07:00:00.000Z' },
+    { id: 'm1015r02', title: '推进亡人案件处置动作SOP制定，涵盖重伤亡人重监管场景，并与监管压力大的区总沟通获取输入', desc: '日常工作 | 发布日期: 10月15日', priority: 'high', status: 'todo', person: '杜凯', deadline: '', conclusion: '', created: '2026-10-15T07:00:00.000Z' },
+    { id: 'm0813r01', title: '整理线下沟通话术的底线原则，扩充至 SAG 策略库供一线参考。', desc: '属地周会 | 发布人: 蔡敏 | 发布日期: 8月13日', priority: 'high', status: 'todo', person: '杨启皎', deadline: '2026-08-20', conclusion: '', created: '2026-08-13T09:00:00.000Z' },
+    { id: 'm0814r01', title: '针对新职伤政策执行中的疑问（如两轮骑手是否纳入、话术规范等），收集一线问题并与业管拉齐后反馈。', desc: '态势感知会 | 发布人: 蔡敏 | 发布日期: 8月14日', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-08-28', conclusion: '', created: '2026-08-14T09:00:00.000Z' },
+    { id: 'm0814r02', title: '针对快送亡人事故复盘中的法务协同、三者沟通机制等横向协同问题，拉通相关方进行专项研究。', desc: '态势感知会 | 发布人: 蔡敏 | 发布日期: 8月14日', priority: 'high', status: 'todo', person: '杜凯', deadline: '2026-08-28', conclusion: '', created: '2026-08-14T09:05:00.000Z' },
+    { id: 'm0814r03', title: '针对作业质量中的管控告知、解静默等问题，研究更优的智能化提示方式，避免人为失误。', desc: '态势感知会 | 发布人: 蔡敏 | 发布日期: 8月14日', priority: 'high', status: 'todo', person: '杜凯,杨启皎', deadline: '2026-08-28', conclusion: '', created: '2026-08-14T09:10:00.000Z' },
+    { id: 'm0904r01', title: '制定风险案件监控机制及安全管理费自查机制，并优化现有方案。', desc: '日常工作 | 发布日期: 9月4日', priority: 'high', status: 'todo', person: '大朋', deadline: '2026-09-04', conclusion: '', created: '2026-09-04T09:00:00.000Z' },
+    { id: 'm0904r02', title: '完成"小尖刀"存量业务、案件量及人力盘点，并产出专项能力提升方案。', desc: '日常工作 | 发布日期: 9月4日', priority: 'high', status: 'todo', person: '杜凯,杨启皎', deadline: '', conclusion: '', created: '2026-09-04T09:05:00.000Z' },
     // 11/11 新增待办
     { id: 'm1111r01', title: '编写并发送邮件申请模板及授权书内容，待法务确认模板后推进 @姜传宏 Lm Jiang', desc: '11.11属地规划周会 | 序号1', priority: 'high', status: 'todo', person: '姜传宏', deadline: '', conclusion: '', created: '2026-11-11T05:38:00.000Z' },
     { id: 'm1111r02', title: '跟进7月1日前的历史查账进度，排查是否存在未按规则或漏查的情况 @张鈺朋 Martin Zhang', desc: '11.11属地规划周会 | 序号3', priority: 'medium', status: 'todo', person: '张鈺朋', deadline: '', conclusion: '', created: '2026-11-11T05:38:10.000Z' },
@@ -459,18 +489,29 @@ function getDefaultData() {
 
 const SEED_APPLIED_KEY = 'kanban_seed_applied_ids';
 
-// 把新增的种子待办合并进本地已有数据（按 id 去重，用户删掉的不会复活）
+// 同一张卡的内容指纹（标题去 @、去标点 + 负责人），用于避免 id 不同但内容重复
+function seedKey(c) {
+  const title = (c.title || '')
+    .replace(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋|姜传宏|张鈺朋)/g, '')
+    .replace(/[\s。，,.、：:；;"'“”]/g, '');
+  const persons = getPersons(c).slice().sort().join(',');
+  return title + '|' + persons;
+}
+
+// 把新增的种子待办合并进本地已有数据（按 id + 内容指纹去重，用户删掉的不会复活）
 function mergeSeedData(list) {
   let applied = [];
   try { applied = JSON.parse(localStorage.getItem(SEED_APPLIED_KEY) || '[]'); } catch (e) { applied = []; }
   const appliedSet = new Set(Array.isArray(applied) ? applied : []);
   const existing = new Set(list.map(c => c.id));
+  const existingKeys = new Set(list.map(seedKey));
   let added = 0;
   for (const seed of getDefaultData()) {
-    if (existing.has(seed.id)) { appliedSet.add(seed.id); continue; }
+    if (existing.has(seed.id) || existingKeys.has(seedKey(seed))) { appliedSet.add(seed.id); continue; }
     if (appliedSet.has(seed.id)) continue;
     list.push(seed);
     existing.add(seed.id);
+    existingKeys.add(seedKey(seed));
     appliedSet.add(seed.id);
     added++;
   }
@@ -1071,6 +1112,42 @@ async function importWeekData() {
   if (added === 0) { alert('待办已全部导入，没有新增数据'); return; }
   render();
   alert(`✅ 已导入 ${added} 条待办`);
+}
+
+function exportBackup() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'kanban-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function importBackup(ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function() {
+    try {
+      const arr = JSON.parse(reader.result);
+      if (!Array.isArray(arr)) throw new Error('not array');
+      const valid = arr.filter(c => c && c.id && c.title);
+      if (!valid.length) throw new Error('empty');
+      if (!confirm('导入 ' + valid.length + ' 条待办？将与现有数据按 id 合并，不会删除现有卡片。')) return;
+      const map = new Map(data.map(c => [c.id, c]));
+      valid.forEach(c => map.set(c.id, c));
+      data = [...map.values()];
+      await saveData();
+      render();
+      alert('✅ 已恢复 ' + valid.length + ' 条待办');
+    } catch (e) {
+      alert('导入失败：不是有效的看板备份 JSON 文件');
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
 }
 
 async function clearAll() {
