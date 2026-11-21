@@ -396,6 +396,10 @@ function getCurrentUser() {
 function getDefaultData() {
   const now = new Date().toISOString();
   return [
+    // 11/21 按用户截图补录的剩余待办
+    { id: 'm1121r01', title: '整理并汇总关单时能为司机处理的事宜，明确关单标准，并在全国条线群内强调', desc: '日常工作', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-11-22', conclusion: '', created: '2026-11-21T06:00:00.000Z' },
+    { id: 'm1121r02', title: '与雪飞交涉确认超时还款的时间计算口径（首次提交时间）', desc: '日常工作', priority: 'medium', status: 'doing', person: '大朋', deadline: '2026-11-23', conclusion: '', created: '2026-11-21T06:05:00.000Z' },
+    { id: 'm1121r03', title: '完成属地案件风险盯控机制', desc: '日常工作', priority: 'medium', status: 'todo', person: '大朋', deadline: '', conclusion: '', created: '2026-11-21T06:10:00.000Z' },
     // ===== 8-10月恢复数据（从历史会话备份中找回）=====
     { id: 'j1721566001', title: '完成事故流程材料的撰写与台账填写，并同步给黄彬。 @杜凯 Du Du', desc: '7.20属地规划周会', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-07-27', conclusion: '', created: '2026-07-20T08:00:00.000Z' },
     { id: 'j1721566002', title: '统筹整合各小组交付策略，形成最终知识库版本。 @杜凯 @杨启皎', desc: '7.20属地规划周会', priority: 'medium', status: 'todo', person: '杜凯,杨启皎', deadline: '2026-07-27', conclusion: '', created: '2026-07-20T08:05:00.000Z' },
@@ -426,17 +430,17 @@ function getDefaultData() {
     { id: 'm0904r02', title: '完成"小尖刀"存量业务、案件量及人力盘点，并产出专项能力提升方案。', desc: '日常工作 | 发布日期: 9月4日', priority: 'high', status: 'todo', person: '杜凯,杨启皎', deadline: '', conclusion: '', created: '2026-09-04T09:05:00.000Z' },
     // 11/11 新增待办
     { id: 'm1111r01', title: '编写并发送邮件申请模板及授权书内容，待法务确认模板后推进 @姜传宏 Lm Jiang', desc: '11.11属地规划周会 | 序号1', priority: 'high', status: 'todo', person: '姜传宏', deadline: '', conclusion: '', created: '2026-11-11T05:38:00.000Z' },
-    { id: 'm1111r02', title: '跟进7月1日前的历史查账进度，排查是否存在未按规则或漏查的情况 @张鈺朋 Martin Zhang', desc: '11.11属地规划周会 | 序号3', priority: 'medium', status: 'todo', person: '张鈺朋', deadline: '', conclusion: '', created: '2026-11-11T05:38:10.000Z' },
+    { id: 'm1111r02', title: '跟进7月1日前的历史查账进度，排查是否存在未按规则或漏查的情况 @张鈺朋 Martin Zhang', desc: '11.11属地规划周会 | 序号3', priority: 'medium', status: 'todo', person: '大朋', deadline: '', conclusion: '', created: '2026-11-11T05:38:10.000Z' },
     { id: 'm1111r03', title: '周三前完成T1 DDO指标讨论稿的意见汇总，并于周三前反馈给穆老师 @姜传宏 Lm Jiang', desc: '11.11属地规划周会 | 序号4', priority: 'high', status: 'todo', person: '姜传宏', deadline: '2026-11-11', conclusion: '', created: '2026-11-11T05:38:20.000Z' },
     { id: 'm1111r04', title: '回溯9月1日后结案的6笔突发疾病案件，定位复审环节的具体责任人 @王若蒙 Ruomeng Wang', desc: '11.11属地规划周会 | 序号5', priority: 'high', status: 'todo', person: '王若蒙', deadline: '', conclusion: '', created: '2026-11-11T05:38:30.000Z' },
     { id: 'm1111r05', title: '在车管群内强调全量标签点选准确性要求，尤其是突发疾病是否保障标签 @杜凯 Du Du', desc: '11.11属地规划周会 | 序号6', priority: 'medium', status: 'todo', person: '杜凯', deadline: '', conclusion: '', created: '2026-11-11T05:38:40.000Z' },
     { id: 'm1111r06', title: '梳理突发疾病及事故侧的重要规则标签，制定质检与复审的考核加强方案，并在规划会同步 @王若蒙 Ruomeng Wang @杜凯 Du Du', desc: '11.11属地规划周会 | 序号7', priority: 'high', status: 'todo', person: '王若蒙,杜凯', deadline: '', conclusion: '', created: '2026-11-11T05:38:50.000Z' },
     { id: 'm1111r07', title: '出具包含标签点选准确性的9月和10月执规准确性报告，并于周四同步 @王若蒙 Ruomeng Wang', desc: '11.11属地规划周会 | 序号8', priority: 'high', status: 'todo', person: '王若蒙', deadline: '2026-11-12', conclusion: '', created: '2026-11-11T05:39:00.000Z' },
     { id: 'm1111r08', title: '获取职伤工单审核不通过的清单，分类分析是聚焦个人原因还是普遍规则不掌握，并视情况安排培训 @杜凯 Du Du', desc: '11.11属地规划周会 | 序号9', priority: 'medium', status: 'todo', person: '杜凯', deadline: '', conclusion: '', created: '2026-11-11T05:39:10.000Z' },
-    { id: 'm1111r09', title: '汇总职伤等日常需监控的看板数据需求给敏哥，向穆老师申请获取底层数据权限 @杜凯 Du Du', desc: '11.11属地规划周会 | 序号10', priority: 'medium', status: 'todo', person: '杜凯', deadline: '', conclusion: '', created: '2026-11-11T05:39:20.000Z' },
+    { id: 'm1111r09', title: '汇总职伤等日常需监控的看板数据需求给敏哥，向穆老师申请获取底层数据权限 @杜凯 Du Du', desc: '11.11属地规划周会 | 序号10', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-11-22', conclusion: '', created: '2026-11-11T05:39:20.000Z' },
     // 11/5 新增待办
-    { id: 'm1105r01', title: '产出突发疾病工单作业指导书 @杜凯', desc: '日常工作 | 发布日期: 11月5日', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-11-30', conclusion: '', created: '2026-11-05T06:57:00.000Z' },
-    { id: 'm1105r02', title: '细化风险治理工单加急回复规则 @杨启皎', desc: '日常工作 | 发布日期: 11月5日', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '2026-11-30', conclusion: '', created: '2026-11-05T06:58:00.000Z' },
+    { id: 'm1105r01', title: '产出突发疾病工单作业指导书 @杜凯', desc: '日常工作 | 发布日期: 11月5日', priority: 'medium', status: 'todo', person: '杜凯', deadline: '2026-12-31', conclusion: '', created: '2026-11-05T06:57:00.000Z' },
+    { id: 'm1105r02', title: '细化风险治理工单加急回复规则 @杨启皎', desc: '日常工作 | 发布日期: 11月5日', priority: 'medium', status: 'doing', person: '杨启皎', deadline: '', conclusion: '', created: '2026-11-05T06:58:00.000Z' },
     // 11/4 新增待办
     { id: 'm1104r01', title: '迭代风险治理工单结案标准，使标准更明确 @杨启皎', desc: '日常工作 | 发布日期: 11月4日', priority: 'medium', status: 'todo', person: '杨启皎', deadline: '', conclusion: '', created: '2026-11-04T05:06:00.000Z' },
     // 6/22 本周待办
@@ -488,6 +492,23 @@ function getDefaultData() {
 }
 
 const SEED_APPLIED_KEY = 'kanban_seed_applied_ids';
+
+// 11/21 一次性字段修正：旧 localStorage 里已有这些卡时，按用户截图更新状态/负责人/截止日期
+const FIELD_FIX_KEY = 'kanban_field_fix_1121';
+function applyFieldFixes(list) {
+  try { if (localStorage.getItem(FIELD_FIX_KEY)) return 0; } catch (e) { return 0; }
+  const patches = {
+    m1111r02: { person: '大朋' },
+    m1111r09: { deadline: '2026-11-22' },
+    m1105r01: { deadline: '2026-12-31' },
+    m1105r02: { status: 'doing', deadline: '' },
+    m1015r02: { person: '杜凯' }
+  };
+  let n = 0;
+  list.forEach(c => { if (patches[c.id]) { Object.assign(c, patches[c.id]); n++; } });
+  try { localStorage.setItem(FIELD_FIX_KEY, '1'); } catch (e) {}
+  return n;
+}
 
 // 同一张卡的内容指纹（标题去 @、去标点 + 负责人），用于避免 id 不同但内容重复
 function seedKey(c) {
@@ -546,7 +567,9 @@ async function loadData() {
       if (localData && localData.length > 0) {
         data = localData.filter(c => c && c.title && c.id);
         isSharedMode = false;
-        if (mergeSeedData(data) > 0) {
+        const fixedCount = applyFieldFixes(data);
+        const addedCount = mergeSeedData(data);
+        if (addedCount > 0 || fixedCount > 0) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
         render();
@@ -683,7 +706,7 @@ function getPerson(card) {
     return arr[0] || '';
   }
   if (!card.title) return '';
-  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋|姜传宏)/);
+  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋|姜传宏|张鈺朋)/);
   return m ? m[1] : '';
 }
 
@@ -692,7 +715,7 @@ function getPersons(card) {
     return Array.isArray(card.person) ? card.person.filter(Boolean) : card.person.split(',').map(p => p.trim()).filter(Boolean);
   }
   if (!card.title) return [];
-  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋|姜传宏)/g);
+  const m = card.title.match(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋|姜传宏|张鈺朋)/g);
   if (!m) return [];
   return [...new Set(m.map(s => s.replace('@', '')))];
 }
@@ -728,7 +751,7 @@ async function toggleArchive(id) {
 
 function cleanTitle(title) {
   return title
-    .replace(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋)(\s+\w+\s+\w+)?/g, '')
+    .replace(/@(杜凯|王若蒙|杨启皎|蔡敏|大朋|姜传宏|张鈺朋)(\s+\w+\s+\w+)?/g, '')
     .replace(/\s*[。，.]?\s*DDL[：:]\s*\d+月\d+日\s*/g, '')
     .replace(/^\d+[、，,.]\s*/, '')
     .trim();
